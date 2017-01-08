@@ -265,12 +265,17 @@ class Renderer(base.Renderer):
                     selected=idx not in request_params
                 ))
 
-                attr = GROUPBY_CRITERIA[self.data.group_by]['metadata']
+                # attr = GROUPBY_CRITERIA[self.data.group_by]['metadata']
                 mod = GROUPBY_CRITERIA[self.data.group_by]['display_modifier']
+
+                catalog = getToolByName(self.context, 'portal_catalog')
+                unindex = catalog._catalog.indexes[idx]._unindex
 
                 grouped_results = {}
                 for item in results:
-                    val = getattr(item, attr, None)
+                    rid = item._brain.getRID()
+                    # val = getattr(item, attr, None)
+                    val = unindex.get(rid)
                     if callable(val):
                         val = val()
                     if not getattr(val, '__iter__', False):
